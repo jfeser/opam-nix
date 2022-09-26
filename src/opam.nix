@@ -27,7 +27,7 @@ let
   mergePackageSets = zipAttrsWith (_: foldl' (a: b: a // b) { });
 
   inherit (bootstrapPackages)
-    runCommandNoCC linkFarm symlinkJoin opam2json opam;
+    runCommand linkFarm symlinkJoin opam2json opam;
 
   # Pkgdef -> Derivation
   builder = import ./builder.nix bootstrapPackages.lib;
@@ -99,7 +99,7 @@ in rec {
   # Path -> {...}
   importOpam = opamFile:
     let
-      json = runCommandNoCC "opam.json" {
+      json = runCommand "opam.json" {
         preferLocalBuild = true;
         allowSubstitutes = false;
       } "${opam2json}/bin/opam2json ${opamFile} > $out";
@@ -141,7 +141,7 @@ in rec {
 
       query = concatStringsSep "," (attrValues (mapAttrs pkgRequest packages));
 
-      resolve-drv = runCommandNoCC "resolve" {
+      resolve-drv = runCommand "resolve" {
         nativeBuildInputs = [ opam bootstrapPackages.ocaml ];
         OPAMCLI = "2.0";
       } ''
